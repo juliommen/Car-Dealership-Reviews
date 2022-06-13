@@ -1,11 +1,11 @@
   applications:
-  - name: djangoapp
+  - name: CarDealershipReviews
     routes:
-      - route: $HOST.$DOMAIN
+      - route: cardealershipreviews.us-south.cf.appdomain.cloud
     memory: 128M
     buildpack: python_buildpack
-  - name: djangoapp-nginx
+  - name: CarDealershipReviews-nginx
     routes:
-      - route: $HOST.$DOMAIN/static
+      - route: cardealershipreviews.us-south.cf.appdomain.cloud/static
     memory: 128M
     buildpack: staticfile_buildpack

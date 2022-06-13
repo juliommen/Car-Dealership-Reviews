@@ -29,6 +29,8 @@ APPEND_SLASH = True
 
 ALLOWED_HOSTS = ["localhost"]
 
+ALLOWED_HOSTS.append('cardealershipreviews.us-south.cf.appdomain.cloud')
+
 
 # Application definition
 
