@@ -11,20 +11,21 @@
 
 <form action="{% url 'djangoapp:login' %}" method="post">
     {% csrf_token %}
-    <div class="container"> 
+    <div class="mt-5 p-4 border border-secondary rounded" style="margin:auto; width: 20em; padding:auto;"> 
         <h1>Login</h1>
+        <hr>
         <div class="form-group"> 
-            <label for="username"><b>User Name</b></label>
-            <input id="username" class = "form-control" type="text" placeholder="Enter User Name: " name="username" required>
+            <label for="username"><b>Username</b></label>
+            <input id="username" class = "form-control mb-2" type="text" placeholder="Enter your username" name="username" required>
             <label for="psw"><b>Password</b></label>
-            <input id="psw" class = "form-control" type="password"  placeholder="Enter Password: " name="psw" required> 
+            <input id="psw" class = "form-control mb-2" type="password"  placeholder="Enter your password" name="psw" required> 
         </div>
         {% if message %}
             <div class="alert alert-warning"> 
             {{ message }}
             </div>
         {% endif %}
-        <button class="btn btn-primary" type="submit">Login</button> 
+        <button class="btn btn-primary btn-block" type="submit">Login</button> 
     </div>
 </form>
 
