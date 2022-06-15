@@ -106,6 +106,7 @@ def add_review(request, dealerId):
         url = "https://eebe52d6.us-south.apigw.appdomain.cloud/api/review/"
         response = post_request(url, json_payload, dealerId=dealer_id)
         return HttpResponse(response)
+    
 
 
 

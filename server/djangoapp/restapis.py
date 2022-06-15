@@ -1,16 +1,18 @@
 import requests
 import json
+from dotenv import load_dotenv
 from .models import CarDealer, DealerReview
 from requests.auth import HTTPBasicAuth
+from ibm_watson import NaturalLanguageUnderstandingV1
+from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from ibm_watson.natural_language_understanding_v1 import KeywordsOptions
 
-def get_request(url, **kwargs, api_key=None):
+load_dotenv()
+
+def get_request(url, **kwargs):
     try:
-        if(api_key):
-            response = requests.get(url, headers={'Content-Type': 'application/json'},
-                                params=kwargs, auth=HTTPBasicAuth('apikey', api_key))
-        else:
-           response = requests.get(url, headers={'Content-Type': 'application/json'},
-                                params=kwargs) 
+        response = requests.get(url, headers={'Content-Type': 'application/json'},
+                            params=kwargs)
     except:
         print("Network exception occurred")
     status_code = response.status_code
@@ -63,14 +65,24 @@ def get_reviews(url, **kwargs):
         except:
             return json_result
             
-def analyze_review_sentiments(review):
-    params = dict()
-    params["text"] = review["text"]
-    params["version"] = review["version"]
-    params["features"] = review["features"]
-    params["return_analyzed_text"] = kwargs["return_analyzed_text"]
-    response = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
-                                        auth=HTTPBasicAuth('apikey', api_key))           
+def analyze_review_sentiments(text):
+    url = os.environ.get('url')
+    apikey =  os.environ.get('api_key')
+
+    authenticator = IAMAuthenticator(apikey)
+    natural_language_understanding = NaturalLanguageUnderstandingV1(
+        version='2022-04-07',
+        authenticator=authenticator)
+
+    natural_language_understanding.set_service_url(url)
+
+    response = natural_language_understanding.analyze(
+        text=text,
+        features=Features(keywords=KeywordsOptions(sentiment=True,limit=1))
+        ).get_result()
+
+    print(json.dumps(response, indent=2)) 
+    return "top"     
     
 def post_request(url, json_payload, **kwargs):
     print(json_payload)
@@ -82,13 +94,6 @@ def post_request(url, json_payload, **kwargs):
     json_data = json.loads(response.text)
     return json_data    
 
-# Create a `post_request` to make HTTP POST requests
-# e.g., response = requests.post(url, params=kwargs, json=payload)
-
-# Create an `analyze_review_sentiments` method to call Watson NLU and analyze text
-# def analyze_review_sentiments(text):
-# - Call get_request() with specified arguments
-# - Get the returned sentiment label such as Positive or Negative
 
 
 

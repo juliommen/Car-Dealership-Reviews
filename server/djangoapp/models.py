@@ -19,7 +19,7 @@ class CarModel(models.Model):
     dealership_id = models.IntegerField(null=False)
     CAR_TYPES = [('sedan', 'Sedan'),('suv', 'SUV'),('wagon', 'Wagon'),('hatch', 'Hatch'),('truck','Truck')]
     car_type =  models.CharField(null=False, max_length=5, choices=CAR_TYPES, default='hatch')
-    car_year = models.DateField(null=False)
+    car_year = models.IntegerField(null=False)
     def __str__(self):
         return "Name: " + self.car_model
 
