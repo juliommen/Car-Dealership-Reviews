@@ -1,6 +1,6 @@
 requests
 Django
-gunicorn==20.1.0
-Pillow==8.0.1
+gunicorn
+Pillow
 ibm-watson
 python-dotenv

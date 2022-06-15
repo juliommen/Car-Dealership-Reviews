@@ -72,10 +72,12 @@ def logout_request(request):
 
 
 def get_dealerships(request):
+    context={}
     if request.method == "GET":
         url = "https://eebe52d6.us-south.apigw.appdomain.cloud/api/dealership/"
         dealerships = get_dealers(url)
-        return HttpResponse(dealerships)
+        context['dealerships'] = dealerships
+        return render(request, 'djangoapp/index.html', context)
 
 def filter_dealers(request, state):
     if request.method == "GET":

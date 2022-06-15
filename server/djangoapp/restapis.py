@@ -1,11 +1,13 @@
+import os
 import requests
 import json
+import urllib.parse
 from dotenv import load_dotenv
 from .models import CarDealer, DealerReview
 from requests.auth import HTTPBasicAuth
 from ibm_watson import NaturalLanguageUnderstandingV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
-from ibm_watson.natural_language_understanding_v1 import KeywordsOptions
+from ibm_watson.natural_language_understanding_v1 import Features, KeywordsOptions
 
 load_dotenv()
 
@@ -50,7 +52,10 @@ def get_reviews(url, **kwargs):
             for review in reviews:
 
                 if (review["sentiment"]==""):
-                    sentiment = analyze_review_sentiments(review)
+                    try:
+                        sentiment = analyze_review_sentiments(review["review"])
+                    except:
+                        sentiment = ""
                 else:
                     sentiment = review["sentiment"]
 
@@ -61,28 +66,21 @@ def get_reviews(url, **kwargs):
                                             car_make=review["car_make"], car_model=review["car_model"],
                                             car_year=review["car_year"], sentiment=sentiment)
                 results.append(review_obj)
+                print(review_obj)
             return results
         except:
             return json_result
             
 def analyze_review_sentiments(text):
-    url = os.environ.get('url')
-    apikey =  os.environ.get('api_key')
-
-    authenticator = IAMAuthenticator(apikey)
-    natural_language_understanding = NaturalLanguageUnderstandingV1(
-        version='2022-04-07',
-        authenticator=authenticator)
-
-    natural_language_understanding.set_service_url(url)
-
-    response = natural_language_understanding.analyze(
-        text=text,
-        features=Features(keywords=KeywordsOptions(sentiment=True,limit=1))
-        ).get_result()
-
-    print(json.dumps(response, indent=2)) 
-    return "top"     
+    text = urllib.parse.quote(text)
+    url = os.environ.get('url')+"/v1/analyze?version=2022-04-07&text="+text+"&features=keywords&keywords.sentiment=true&keywords.limit=1"
+    print(url)
+    apikey =  os.environ.get('key')
+ 
+    response = requests.get(url, auth=HTTPBasicAuth('apikey', apikey))
+    response = json.loads(response.text)
+    sentiment = response["keywords"][0]["sentiment"]["label"] 
+    return sentiment
     
 def post_request(url, json_payload, **kwargs):
     print(json_payload)
