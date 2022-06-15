@@ -7,6 +7,7 @@ app_name = 'djangoapp'
 urlpatterns = [
     path(route='', view=views.get_dealerships, name='index'),
     path('dealer/<int:dealerId>/', views.get_dealer_reviews, name='dealer_reviews'),
+    path('add/<int:dealerId>/', views.add_review, name='add_review'),
     path('<str:state>/', views.filter_dealers, name='dealers_state'),
     path('registration/', views.registration_request, name='registration'),
     path('login/', views.login_request, name='login'),

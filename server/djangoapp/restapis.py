@@ -3,16 +3,17 @@ import json
 from .models import CarDealer, DealerReview
 from requests.auth import HTTPBasicAuth
 
-def get_request(url, **kwargs):
-    print(kwargs)
-    print("GET from {} ".format(url))
+def get_request(url, **kwargs, api_key=None):
     try:
-        response = requests.get(url, headers={'Content-Type': 'application/json'},
-                                    params=kwargs)
+        if(api_key):
+            response = requests.get(url, headers={'Content-Type': 'application/json'},
+                                params=kwargs, auth=HTTPBasicAuth('apikey', api_key))
+        else:
+           response = requests.get(url, headers={'Content-Type': 'application/json'},
+                                params=kwargs) 
     except:
         print("Network exception occurred")
     status_code = response.status_code
-    print("With status {} ".format(status_code))
     json_data = json.loads(response.text)
     return json_data
 
@@ -45,21 +46,41 @@ def get_reviews(url, **kwargs):
         try:
             reviews = json_result["reviews"]
             for review in reviews:
-                print(review)
+
+                if (review["sentiment"]==""):
+                    sentiment = analyze_review_sentiments(review)
+                else:
+                    sentiment = review["sentiment"]
+
                 review_obj = DealerReview(
-                                            id=review["id"], name=review["name"],             
+                                            name=review["name"],             
                                             dealership=review["dealership"], review=review["review"],
                                             purchase=review["purchase"], purchase_date=review["purchase_date"],
                                             car_make=review["car_make"], car_model=review["car_model"],
-                                            car_year=review["car_year"], sentiment=review["sentiment"])
+                                            car_year=review["car_year"], sentiment=sentiment)
                 results.append(review_obj)
             return results
         except:
             return json_result
             
-        
+def analyze_review_sentiments(review):
+    params = dict()
+    params["text"] = review["text"]
+    params["version"] = review["version"]
+    params["features"] = review["features"]
+    params["return_analyzed_text"] = kwargs["return_analyzed_text"]
+    response = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
+                                        auth=HTTPBasicAuth('apikey', api_key))           
     
-
+def post_request(url, json_payload, **kwargs):
+    print(json_payload)
+    try:
+        response = requests.post(url, json=json_payload, params=kwargs) 
+    except:
+        print("Network exception occurred")
+    status_code = response.status_code
+    json_data = json.loads(response.text)
+    return json_data    
 
 # Create a `post_request` to make HTTP POST requests
 # e.g., response = requests.post(url, params=kwargs, json=payload)
