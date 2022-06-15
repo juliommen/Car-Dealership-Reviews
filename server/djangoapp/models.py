@@ -4,7 +4,7 @@ from django.utils.timezone import now
 from django.conf import settings
 import uuid
 
-# Course model
+
 class CarMake(models.Model):
     car_make = models.CharField(null=False, max_length=30)
     description = models.CharField(max_length=1000)
@@ -24,8 +24,37 @@ class CarModel(models.Model):
         return "Name: " + self.car_model
 
 
+class CarDealer:
 
-# <HINT> Create a plain Python class `CarDealer` to hold dealer data
+    def __init__(self, address, city, full_name, id, lat, long, short_name, state, st, zip):
+        self.address = address
+        self.city = city
+        self.full_name = full_name
+        self.id = id
+        self.lat = lat
+        self.long = long
+        self.short_name = short_name
+        self.st = st
+        self.state = state
+        self.zip = zip
+
+    def __str__(self):
+        return "Dealer name: " + self.full_name
 
 
-# <HINT> Create a plain Python class `DealerReview` to hold review data
+class DealerReview:
+
+    def __init__(self, id, name, dealership, review, purchase, purchase_date, car_make, car_model, car_year,sentiment):
+        self.id = id
+        self.name = name
+        self.dealership = dealership
+        self.review = review
+        self.purchase = purchase
+        self.puchase_date = purchase_date
+        self.car_make = car_make
+        self.car_model = car_model
+        self.car_year = car_year
+        self.sentiment = sentiment
+
+    def __str__(self):
+        return "Review: " + self.review

@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
-# from .models import related models
-# from .restapis import related methods
+from .models import CarMake, CarModel
+from .restapis import get_dealers, get_reviews
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -30,7 +30,6 @@ def registration_request(request):
     if request.method == 'GET':
         return render(request, 'djangoapp/registration.html', context)
     elif request.method == 'POST':
-        # Check if user exists
         username = request.POST['username']
         password = request.POST['psw']
         first_name = request.POST['firstname']
@@ -72,16 +71,24 @@ def logout_request(request):
     return redirect('djangoapp:index')
 
 
-# Update the `get_dealerships` view to render the index page with a list of dealerships
 def get_dealerships(request):
-    context = {}
     if request.method == "GET":
-        return render(request, 'djangoapp/index.html', context)
+        url = "https://eebe52d6.us-south.apigw.appdomain.cloud/api/dealership/"
+        dealerships = get_dealers(url)
+        return HttpResponse(dealerships)
+
+def filter_dealers(request, state):
+    if request.method == "GET":
+        url = "https://eebe52d6.us-south.apigw.appdomain.cloud/api/dealership/"
+        dealerships = get_dealers(url, state=state)
+        return HttpResponse(dealerships)
 
 
-# Create a `get_dealer_details` view to render the reviews of a dealer
-# def get_dealer_details(request, dealer_id):
-# ...
+def get_dealer_reviews(request, dealerId):
+    if request.method == "GET":
+        url = "https://eebe52d6.us-south.apigw.appdomain.cloud/api/review/"
+        reviews = get_reviews(url, dealerId=dealerId)
+        return HttpResponse(reviews)
 
 # Create a `add_review` view to submit a review
 # def add_review(request, dealer_id):
