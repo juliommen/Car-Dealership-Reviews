@@ -97,17 +97,23 @@ def add_review(request, dealerId):
     if request.method != "GET":
         if user.is_authenticated:
             review=dict()
-            review.name = request.name
+            review.name = request.POST['reviewer_name']
             review.dealership = dealer_id
-            review.review = request.review
-            review.puchase_date = request.purchase_date
-            review.car_make = request.car_make
-            review.car_model = request.car_model
-            review.car_year = request.car_year
-            review.sentiment = analyze_review_sentiments(review)
-            json_payload = {"review": review}
+            review.puchase_date = request.POST['purchasedate']
+            review.review = request.POST['review']
+
+            car_id = request.POST['car']
+            car = CarModel.objects.get(id=car_id)
+            review.car_make = CarMake.objects.get(id=car.car_make_id).car_make
+            review.car_model = car.car_model
+            review.car_year = car.car_year
+
+            review.sentiment = analyze_review_sentiments(review.review)
+
+            json_payload = {"review": review}          
             url = "https://eebe52d6.us-south.apigw.appdomain.cloud/api/review/"
-            response = post_request(url, json_payload, dealerId=dealer_id)
+            print(json_payload)
+            #response = post_request(url, json_payload, dealerId=dealer_id)
             return HttpResponse(response)
     else: 
         car_models = CarModel.objects.filter(dealership_id=dealerId).all()
