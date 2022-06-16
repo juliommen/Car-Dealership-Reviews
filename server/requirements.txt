@@ -2,5 +2,4 @@ requests
 Django
 gunicorn
 Pillow
-ibm-watson
 python-dotenv

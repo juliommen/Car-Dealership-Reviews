@@ -5,9 +5,6 @@ import urllib.parse
 from dotenv import load_dotenv
 from .models import CarDealer, DealerReview
 from requests.auth import HTTPBasicAuth
-from ibm_watson import NaturalLanguageUnderstandingV1
-from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
-from ibm_watson.natural_language_understanding_v1 import Features, KeywordsOptions
 
 load_dotenv()
 
@@ -46,6 +43,7 @@ def get_reviews(url, **kwargs):
     except:
         dealerId=""
     json_result = get_request(url, dealerId=dealerId)
+    print(json_result)
     if json_result:
         try:
             reviews = json_result["reviews"]
@@ -54,6 +52,7 @@ def get_reviews(url, **kwargs):
                 if (review["sentiment"]==""):
                     try:
                         sentiment = analyze_review_sentiments(review["review"])
+                        print(sentiment)
                     except:
                         sentiment = ""
                 else:
@@ -62,11 +61,11 @@ def get_reviews(url, **kwargs):
                 review_obj = DealerReview(
                                             name=review["name"],             
                                             dealership=review["dealership"], review=review["review"],
-                                            purchase=review["purchase"], purchase_date=review["purchase_date"],
+                                            purchase_date=review["purchase_date"],
                                             car_make=review["car_make"], car_model=review["car_model"],
                                             car_year=review["car_year"], sentiment=sentiment)
                 results.append(review_obj)
-                print(review_obj)
+                print(results)
             return results
         except:
             return json_result
@@ -74,9 +73,7 @@ def get_reviews(url, **kwargs):
 def analyze_review_sentiments(text):
     text = urllib.parse.quote(text)
     url = os.environ.get('url')+"/v1/analyze?version=2022-04-07&text="+text+"&features=keywords&keywords.sentiment=true&keywords.limit=1"
-    print(url)
     apikey =  os.environ.get('key')
- 
     response = requests.get(url, auth=HTTPBasicAuth('apikey', apikey))
     response = json.loads(response.text)
     sentiment = response["keywords"][0]["sentiment"]["label"] 

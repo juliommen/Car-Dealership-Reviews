@@ -87,27 +87,37 @@ def filter_dealers(request, state):
 
 
 def get_dealer_reviews(request, dealerId):
+    context={}
+    context['dealerId']=dealerId
     if request.method == "GET":
         url = "https://eebe52d6.us-south.apigw.appdomain.cloud/api/review/"
         reviews = get_reviews(url, dealerId=dealerId)
-        return HttpResponse(reviews)
+        if (type(reviews)==dict):
+            context['message'] = "No reviews found for this dealership."   
+        else:
+            context['reviews'] = reviews   
+        print(context['reviews'][0].sentiment)
+        return render(request, 'djangoapp/dealer_reviews.html', context)
 
 def add_review(request, dealerId):
     user = request.user
-    if user.is_authenticated:
-        review=dict()
-        review.name = request.name
-        review.dealership = dealer_id
-        review.review = request.review
-        review.puchase_date = request.purchase_date
-        review.car_make = request.car_make
-        review.car_model = request.car_model
-        review.car_year = request.car_year
-        review.sentiment = analyze_review_sentiments(review)
-        json_payload = {"review": review}
-        url = "https://eebe52d6.us-south.apigw.appdomain.cloud/api/review/"
-        response = post_request(url, json_payload, dealerId=dealer_id)
-        return HttpResponse(response)
+    if request.method != "GET":
+        if user.is_authenticated:
+            review=dict()
+            review.name = request.name
+            review.dealership = dealer_id
+            review.review = request.review
+            review.puchase_date = request.purchase_date
+            review.car_make = request.car_make
+            review.car_model = request.car_model
+            review.car_year = request.car_year
+            review.sentiment = analyze_review_sentiments(review)
+            json_payload = {"review": review}
+            url = "https://eebe52d6.us-south.apigw.appdomain.cloud/api/review/"
+            response = post_request(url, json_payload, dealerId=dealer_id)
+            return HttpResponse(response)
+        else: 
+            return render(request, 'djangoapp/add_review.html', context)
     
 
 
