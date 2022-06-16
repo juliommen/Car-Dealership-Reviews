@@ -39,29 +39,29 @@ def get_reviews(url, **kwargs):
     except:
         dealerId=""
     json_result = get_request(url, dealerId=dealerId)
-    print(json_result)
+    
     if json_result:
         try:
             reviews = json_result["reviews"]
+            
             for review in reviews:
 
                 if (review["sentiment"]==""):
                     try:
                         sentiment = analyze_review_sentiments(review["review"])
-                        print(sentiment)
+                        
                     except:
                         sentiment = ""
                 else:
                     sentiment = review["sentiment"]
-
                 review_obj = DealerReview(
                                             name=review["name"],             
                                             dealership=review["dealership"], review=review["review"],
                                             purchase_date=review["purchase_date"],
                                             car_make=review["car_make"], car_model=review["car_model"],
                                             car_year=review["car_year"], sentiment=sentiment)
+               
                 results.append(review_obj)
-                print(results)
             return results
         except:
             return json_result
@@ -72,17 +72,18 @@ def analyze_review_sentiments(text):
     apikey =  os.environ.get('key')
     response = requests.get(url, auth=HTTPBasicAuth('apikey', apikey))
     response = json.loads(response.text)
-    sentiment = response["keywords"][0]["sentiment"]["label"] 
+    try:
+        sentiment = response["keywords"][0]["sentiment"]["label"] 
+    except:
+        sentiment = "neutral"
     return sentiment
     
-def post_request(url, json_payload, **kwargs):
-    print(json_payload)
+def post_request(url, json_payload):
     try:
-        response = requests.post(url, json=json_payload, params=kwargs) 
+        response_post = requests.post(url=url, json=json_payload) 
     except:
         print("Network exception occurred")
-    status_code = response.status_code
-    json_data = json.loads(response.text)
+    json_data = json.loads(response_post.text)
     return json_data    
 
 

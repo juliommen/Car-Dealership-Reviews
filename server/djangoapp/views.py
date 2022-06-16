@@ -88,33 +88,31 @@ def get_dealer_reviews(request, dealerId):
         if (type(reviews)==dict):
             context['message'] = "No reviews found for this dealership."   
         else:
-            context['reviews'] = reviews  
-            print(context['reviews'][0].sentiment)    
+            context['reviews'] = reviews    
         return render(request, 'djangoapp/dealer_reviews.html', context)
 
 def add_review(request, dealerId):
     user = request.user
     if request.method != "GET":
         if user.is_authenticated:
-            review=dict()
-            review.name = request.POST['reviewer_name']
-            review.dealership = dealer_id
-            review.puchase_date = request.POST['purchasedate']
-            review.review = request.POST['review']
+            review={}
+            review["name"] = request.POST['reviewer_name']
+            review["dealership"] = dealerId
+            review["purchase_date"] = request.POST['purchasedate']
+            review["review"] = request.POST['review']
 
             car_id = request.POST['car']
-            car = CarModel.objects.get(id=car_id)
-            review.car_make = CarMake.objects.get(id=car.car_make_id).car_make
-            review.car_model = car.car_model
-            review.car_year = car.car_year
+            car = CarModel.objects.get(pk=car_id)
+            review["car_make"] = CarMake.objects.get(id=car.car_make_id.pk).car_make
+            review["car_model"] = car.car_model
+            review["car_year"] = car.car_year
 
-            review.sentiment = analyze_review_sentiments(review.review)
+            review["sentiment"] = analyze_review_sentiments(request.POST['review'])
 
             json_payload = {"review": review}          
             url = "https://eebe52d6.us-south.apigw.appdomain.cloud/api/review/"
-            print(json_payload)
-            #response = post_request(url, json_payload, dealerId=dealer_id)
-            return HttpResponse(response)
+            post_request(url=url, json_payload=json_payload)        
+            return redirect('djangoapp:dealer_reviews',dealerId=dealerId)
     else: 
         car_models = CarModel.objects.filter(dealership_id=dealerId).all()
         cars =[]
@@ -128,71 +126,3 @@ def add_review(request, dealerId):
         context['dealerId']=dealerId
         context['cars'] = cars
         return render(request, 'djangoapp/add_review.html', context)
-    
-
-
-
-
-'''
-def check_if_enrolled(user, course):
-    is_enrolled = False
-    if user.id is not None:
-        # Check if user enrolled
-        num_results = Enrollment.objects.filter(user=user, course=course).count()
-        if num_results > 0:
-            is_enrolled = True
-    return is_enrolled
-
-
-def enroll(request, course_id):
-    course = get_object_or_404(Course, pk=course_id)
-    user = request.user
-
-    is_enrolled = check_if_enrolled(user, course)
-    if not is_enrolled and user.is_authenticated:
-        # Create an enrollment
-        Enrollment.objects.create(user=user, course=course, mode='honor')
-        course.total_enrollment += 1
-        course.save()
-    return HttpResponseRedirect(reverse(viewname='onlinecourse:course_details', args=(course.id,)))
-
-def submit(request,course_id):
-    submitted_anwsers =  extract_answers(request)
-    username = request.user.username
-    user = User.objects.get(username=username)
-    enrollment = Enrollment.objects.get(user=user,course=course_id)
-    submission = Submission.objects.create(
-        enrollment=enrollment)
-    for choice in submitted_anwsers:
-        submission.choices.add(choice)
-    #print(submission.choices.filter(id=choice).)
-    context = show_exam_result(course_id, submission)
-    return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
-
-
-def extract_answers(request):
-    submitted_anwsers = []
-    for key in request.POST:
-        if key.startswith('choice'):
-            value = request.POST[key]
-            choice_id = int(value)
-            submitted_anwsers.append(choice_id)
-    return submitted_anwsers
-
-
-def show_exam_result(course_id, submission):
-    course = Course.objects.get(id=course_id)
-    choices = submission.choices.all()
-    questions = course.question_set.all()
-    correct = 0
-    total = 0
-    for question in questions:
-        if (Question.is_get_score(question,choices)):
-            correct = correct + 1
-        total = total + 1
-    grade = correct * 100 / total
-    grade = int(grade)
-    context={'course':course, 'submission':submission,'grade':grade}
-    return context
-'''
-    
