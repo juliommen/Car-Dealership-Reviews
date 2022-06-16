@@ -16,19 +16,19 @@
         <hr>
         <div class="form-group"> 
             <label for="username"><b>Username</b></label>
-            <input type="text" class="form-control mb-2" placeholder="Define a username" name="username" required> <!--Style input with .form-control class -->
+            <input type="text" class="form-control mb-2" placeholder="Define a username" name="username" required>
             <label for="firstname"><b>First Name</b></label>
-            <input type="text" class="form-control mb-2" placeholder="Enter your first name" name="firstname" required> <!--Style input with .form-control class -->
+            <input type="text" class="form-control mb-2" placeholder="Enter your first name" name="firstname" required> 
             <label for="lastname"><b>Last Name</b></label>
-            <input type="text" class="form-control mb-2" placeholder="Enter your last name" name="lastname" required> <!--Style input with .form-control class -->
+            <input type="text" class="form-control mb-2" placeholder="Enter your last name" name="lastname" required> 
             <label for="psw"><b>Password</b></label>
-            <input type="password" class="form-control mb-2" placeholder="Define a password" name="psw" required> <!--Style input with .form-control class -->
+            <input type="password" class="form-control mb-2" placeholder="Define a password" name="psw" required> 
             {% if message %}
             <div class="alert alert-warning"> 
                 {{ message }}
             </div>
             {% endif %}
-            <button class="btn btn-primary btn-block mt-3" type="submit">Sign up</button> <!--Style button with .btn and .btn-primary class -->
+            <button class="btn btn-primary btn-block mt-3" type="submit">Sign up</button> 
         </div>
     </div>
 </form>

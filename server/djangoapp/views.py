@@ -110,6 +110,15 @@ def add_review(request, dealerId):
             response = post_request(url, json_payload, dealerId=dealer_id)
             return HttpResponse(response)
         else: 
+            car_models = CarModel.objects.filter(dealership_id=dealerid).all()
+            cars =[]
+            for car in car_models:
+                model = car_models.car_model
+                year = car_models.car_year
+                car_make = CarMake.objects.get(id=car_models.car_make_id).car_make
+                cars.append({"model":model,"year":year,"car_make":car_make})
+            context['dealerId']=dealerid
+            context['cars'] = cars
             return render(request, 'djangoapp/add_review.html', context)
     
 
