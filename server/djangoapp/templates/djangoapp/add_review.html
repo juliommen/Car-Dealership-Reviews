@@ -15,42 +15,48 @@
 
 {% include "./navbar.html" %}
 
-<form action="{% url 'djangoapp:add_review' dealerId %}" method="post">
-    {% csrf_token %}
-    <div class="mt-5 p-4 border border-secondary rounded" style="margin:auto; width: 20em; padding:auto;"> 
-        <h1>Sign Up</h1>
+<div class="mt-5 p-4 border border-secondary rounded" style="margin:auto; width: 25em; padding:auto;">
+    <form id="form" action="{% url 'djangoapp:add_review' dealerId %}" method="post">
+        {% csrf_token %}
+        <h1>Submit Review</h1>
         <hr>
-        <div class="form-group"> 
+    
+        <div class="form-group">
             <label for="name"><b>Name</b></label>
-            <input type="text" class="form-control mb-2" placeholder="Please, provide your name" name="name" required>
-
+            <input type="text" class="form-control" id="name" placeholder="Enter your name" required>
+        </div>
+        
+        <div class="form-group">
             <label for="car"><b>Car model</b></label>
-            <select name="car" id="car" class="form-select" required>
+            <select name="car" id="car" class="form-select rounded" value="" required>
+                <option selected value=""></option>
                 {% for car in cars %}
-                    <option selected value={{car.id}}>{{car.name}}-{{car.make.name}}-{{ car.year}}</option>
+                    <option value={{car.id}}>{{car.model}}, {{car.car_make}}, {{car.year}}</option>
                 {% endfor %}
             </select>
-
-            <label for="purchasecheck"><b>Purchased?</b></label>
-            <input class="form-check-input" type="checkbox" name="purchasecheck" id="purchasecheck">
-            
-            <label for="purchasecheck"><b>Purchase date</b></label>
-            <input class="date-own form-control" type="text" name="purchasedate" id="purchasedate">
-
-            <label for="content"><b>Review content</b></label>
-            <textarea class="form-control" id="content" name="content" rows="2" required></textarea>
-            
-            <button class="btn btn-primary btn-block mt-3" type="submit">Sign up</button>
         </div>
-    </div>
-</form>
+    
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="purchased">
+            <label class="form-check-label" for="purchased"><b>Have you purchased the car?</b></label>
+        </div>
+
+        <br>
+    
+        <div class="form-group">
+            <label for="purchasedate"><b>Purchase date</b></label>
+            <input class="date-own form-control" type="text" name="purchasedate" id="purchasedate" placeholder="mm/dd/yyyy">
+        </div>
+    
+        <div class="form-group">
+            <label for="content"><b>Review content</b></label>
+            <textarea class="form-control" id="content" rows="2" required></textarea>
+        </div>
+    
+        <button class="btn btn-primary btn-block mt-3" type="submit">Submit</button>
+    </form>
+</div>
 
 </body>
-
-<script type="text/javascript">
-    $('.date-own').datepicker({
-       format: 'mm/dd/yyyy'
-     });
-</script>
 
 </html>
