@@ -79,13 +79,6 @@ def get_dealerships(request):
         context['dealerships'] = dealerships
         return render(request, 'djangoapp/index.html', context)
 
-def filter_dealers(request, state):
-    if request.method == "GET":
-        url = "https://eebe52d6.us-south.apigw.appdomain.cloud/api/dealership/"
-        dealerships = get_dealers(url, state=state)
-        return HttpResponse(dealerships)
-
-
 def get_dealer_reviews(request, dealerId):
     context={}
     context['dealerId']=dealerId
@@ -95,8 +88,8 @@ def get_dealer_reviews(request, dealerId):
         if (type(reviews)==dict):
             context['message'] = "No reviews found for this dealership."   
         else:
-            context['reviews'] = reviews   
-        print(context['reviews'][0].sentiment)
+            context['reviews'] = reviews  
+            print(context['reviews'][0].sentiment)    
         return render(request, 'djangoapp/dealer_reviews.html', context)
 
 def add_review(request, dealerId):

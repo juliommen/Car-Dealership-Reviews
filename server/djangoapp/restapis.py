@@ -19,13 +19,9 @@ def get_request(url, **kwargs):
     return json_data
 
 
-def get_dealers(url, **kwargs):
+def get_dealers(url):
     results = []
-    try:
-        state = kwargs['state']
-    except:
-        state=""
-    json_result = get_request(url, state=state)
+    json_result = get_request(url)
     if json_result:
         dealers = json_result["rows"]
         for dealer in dealers:
